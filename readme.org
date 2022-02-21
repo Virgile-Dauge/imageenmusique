@@ -4,15 +4,17 @@
 
 
 * Hilbert Curves
-#+begin_src ipython :session truc :file  :exports both :tangle convert.py
-import numpy as np
-import matplotlib.pyplot as plt
+#+begin_src ipython :session iem :file  :exports both :tangle convert.py
+  import numpy as np
+  import pandas as pd
+  import matplotlib.pyplot as plt
+  import gensound
 #+end_src
 
 #+RESULTS:
-: # Out[25]:
+: # Out[3]:
 
-#+begin_src ipython :session truc :file :exports both :tangle convert.py
+#+begin_src ipython :session iem :file :exports both :tangle convert.py
   def hilbert_approx(size=2, start=0, quarter='n'):
       if size == 2:
           mat = np.array([[1, 2],[0, 3]]) + start
@@ -33,7 +35,7 @@ import matplotlib.pyplot as plt
 #+end_src
 
 #+RESULTS:
-: # Out[26]:
+: # Out[4]:
 
 #+begin_src ipython :session iem :file  :exports both :results both
 ha = hilbert_approx(4)
@@ -41,12 +43,12 @@ ha
 #+end_src
 
 #+RESULTS:
-: # Out[38]:
+: # Out[6]:
 : #+BEGIN_EXAMPLE
-:   array([[ 5.,  6.,  9., 10.],
-:   [ 4.,  7.,  8., 11.],
-:   [ 3.,  2., 13., 12.],
-:   [ 0.,  1., 14., 15.]])
+:   array([[ 9., 10., 17., 18.],
+:   [ 8., 11., 16., 19.],
+:   [ 3.,  2., 25., 24.],
+:   [ 0.,  1., 26., 27.]])
 : #+END_EXAMPLE
 
 #+begin_src ipython :session iem :file  :exports both
@@ -61,24 +63,24 @@ map
 
 #+RESULTS:
 #+begin_example
-# Out[80]:
+# Out[7]:
 ,#+BEGIN_EXAMPLE
-  array([[  5., 116.],
-  [  6., 129.],
-  [  9., 209.],
-  [ 10., 125.],
-  [  4.,   9.],
-  [  7.,  48.],
-  [  8., 180.],
-  [ 11., 126.],
-  [  3.,  64.],
-  [  2., 158.],
-  [ 13.,  35.],
-  [ 12.,  65.],
-  [  0., 171.],
-  [  1., 157.],
-  [ 14.,  10.],
-  [ 15., 236.]])
+  array([[  9.,  17.],
+  [ 10., 250.],
+  [ 17., 219.],
+  [ 18.,  59.],
+  [  8.,  15.],
+  [ 11.,  63.],
+  [ 16., 220.],
+  [ 19., 249.],
+  [  3.,  34.],
+  [  2., 181.],
+  [ 25.,  16.],
+  [ 24.,  82.],
+  [  0., 132.],
+  [  1., 203.],
+  [ 26.,  32.],
+  [ 27., 161.]])
 ,#+END_EXAMPLE
 #+end_example
 
@@ -88,48 +90,50 @@ map[np.argsort(map[:, 0])]
 
 #+RESULTS:
 #+begin_example
-# Out[82]:
+# Out[8]:
 ,#+BEGIN_EXAMPLE
-  array([[  0., 171.],
-  [  1., 157.],
-  [  2., 158.],
-  [  3.,  64.],
-  [  4.,   9.],
-  [  5., 116.],
-  [  6., 129.],
-  [  7.,  48.],
-  [  8., 180.],
-  [  9., 209.],
-  [ 10., 125.],
-  [ 11., 126.],
-  [ 12.,  65.],
-  [ 13.,  35.],
-  [ 14.,  10.],
-  [ 15., 236.]])
+  array([[  0., 132.],
+  [  1., 203.],
+  [  2., 181.],
+  [  3.,  34.],
+  [  8.,  15.],
+  [  9.,  17.],
+  [ 10., 250.],
+  [ 11.,  63.],
+  [ 16., 220.],
+  [ 17., 219.],
+  [ 18.,  59.],
+  [ 19., 249.],
+  [ 24.,  82.],
+  [ 25.,  16.],
+  [ 26.,  32.],
+  [ 27., 161.]])
 ,#+END_EXAMPLE
 #+end_example
 
-#+begin_src ipython :session truc :file  :exports both :tangle convert.py
+#+begin_src ipython :session iem :file  :exports both :tangle convert.py
   from matplotlib.image import imread
-  def load_img(path):
+  def load_img(path, d=None):
       fractal = imread(path)
+      if d and d%2==0:
+          fractal = fractal[::d, ::d]
       image_map = np.zeros((len(fractal)**2, 4), dtype=int)
       image_map[:, 0] = hilbert_approx(len(fractal)).flatten()
       image_map[:, 1] = fractal[:, :, 0].ravel()
       image_map[:, 2] = fractal[:, :, 1].ravel()
       image_map[:, 3] = fractal[:, :, 2].ravel()
       image_map[np.argsort(image_map[:, 0])]
-      return image_map
+      return image_map, fractal
 #+end_src
 
 #+RESULTS:
-: # Out[35]:
+: # Out[10]:
 
 #+begin_src ipython :session iem :file  :exports both
 image_map[:, 1] = fractal[:, :, 0].ravel()
 image_map[:, 2] = fractal[:, :, 1].ravel()
 image_map[:, 3] = fractal[:, :, 2].ravel()
-image_map
+image_map = load_img()
 #+end_src
 
 #+RESULTS:
@@ -173,8 +177,10 @@ plt.show()
 #+RESULTS:
 : # Out[117]:
 : [[file:./obipy-resources/anDGJn.png]]
+* Music gen
+** Test music
 
-** test music
+Ne fonctionne plus (février 2022)
 #+begin_src ipython :session iem :file  :exports both
 pip install music
 #+end_src
@@ -210,7 +216,7 @@ wget http://goo.gl/qpOjt
 #+end_src
 
 #+RESULTS:
-* Music gen
+
 ** Test pyknon
 #+begin_src ipython :session iem :file  :exports both
 pip install pyknon
@@ -232,7 +238,20 @@ midi.write("demo.midi")
 #+RESULTS:
 : # Out[2]:
 
-** Mapping des notes
+** Test gensound
+
+#+begin_src ipython :session gensound :file  :exports both
+  from gensound import WAV, test_wav
+
+  print(test_wav)
+  wav = WAV(test_wav)
+  wav.play()
+#+end_src
+
+#+RESULTS:
+: # Out[1]:
+
+* Mapping des notes
 
 *** pixel to freq
 #+begin_src ipython :session truc :file  :exports both
@@ -367,7 +386,6 @@ B8	7902.132820098" > notes.csv
 #+RESULTS:
 
 #+begin_src ipython :session truc :file  :exports both :tangle convert.py
-  import pandas as pd
   def load_notes():
       return pd.read_csv('notes.csv', delimiter='\t', names=['note', 'freq'])
 #+end_src
@@ -407,75 +425,40 @@ B8	7902.132820098" > notes.csv
   print(len(seq), seq[:30])
 #+end_src
 
-#+RESULTS:
-: # Out[55]:
-
-#+begin_src ipython :session truc :file  :exports both
-  from pyknon.genmidi import Midi
-  from pyknon.music import NoteSeq
-  seq_str = ''
-  for i in range(len(seq[:30])):
-    seq_str = seq_str + ' '
-  notes1 = NoteSeq(seq_str)
-  midi = Midi(1, tempo=90)
-  midi.seq_notes(notes1, track=0)
-  midi.write("essai.mid")
-#+end_src
-
-#+RESULTS:
-: # Out[60]:
-
-#+begin_src ipython :session truc :file  :exports both
-import music as M
-T = M.tables.Basic()
-H = M.utils.H
-
-
-# 1) start a ѕynth
-b = M.core.Being()
-
-freq_seq = [get_freq(notes[40:50], img[i, 1]) for i in range(len(img))]
-# 2) set its parameters using sequences to be iterated through
-
-#b.fv_ = [0, 1,5,15,150,1500,15000]  # vibrato frequency
-b.fv_ = [0]  # vibrato frequency
-b.nu_ = [0]  # vibrato depth in semitones (maximum deviation of pitch)
-b.f_ = freq_seq[:50]
-b.d_ = [1 / 2]* len(b.f_)
-
-# 3) render the wavfile
-b.render(30, 'aMusicalSound.wav')  #
-#+end_src
 * Main
-#+begin_src ipython :session truc :file  :exports both :tangle convert.py
+#+begin_src ipython :session iem :file  :exports both :tangle convert.py
+  import argparse
+
   def main():
-      img = load_img('foret.jpeg')
+      parser = argparse.ArgumentParser(description='Transform input image to simple music.')
+      parser.add_argument(
+      '--input', '-i', type=str, default='foret.jpeg',
+          help="Input file (default: 'foret.jpeg').")
+      parser.add_argument(
+          '-n', type=int, default=1,
+          help="matrix dim")
+      args = parser.parse_args()
+      image_cible = args.input
+
+      img, img_raw = load_img(image_cible, args.n)
+      print(len(img_raw))
+      plt.ion()
+      plt.figure()
+      #imgplot = plt.imshow(img_raw[::args.n, ::args.n])
+      imgplot = plt.imshow(img_raw)
+      #plt.show()
+      plt.pause(0.001)
+
       notes = load_notes()
-      import music as M
-      T = M.tables.Basic()
-      H = M.utils.H
 
 
-      # 1) start a ѕynth
-      b = M.core.Being()
-
-      freq_seq = [get_freq(notes, img[i, 1], taux_min=40, taux_max=60) for i in range(len(img))]
+      #freq_seq = [get_freq(notes, img[i, 1], taux_min=40, taux_max=60) for i in range(len(img))]
+      notes_seq = [get_note(notes, img[i, 1], taux_min=40, taux_max=60) for i in range(len(img))]
       # 2) set its parameters using sequences to be iterated through
-      print(freq_seq[7000:9000])
-      #b.fv_ = [0, 1,5,15,150,1500,15000]  # vibrato frequency
-      b.fv_ = [0]  # vibrato frequency
-      b.nu_ = [0]  # vibrato depth in semitones (maximum deviation of pitch)
-      b.f_ = freq_seq[7000:9000]
-      b.d_ = [1 / 4] * len(b.f_)
+      wave = gensound.Sine(' '.join(notes_seq[:100]), duration=0.25e3)
+      print(notes_seq)
+      wave.play()
 
-      # 3) render the wavfile
-      b.render(120, 'aMusicalSound.wav')  #
-      # seq = []
-      # for i in range(len(img)):
-      #     seq.append(get_note(notes, img[i, 1]))
-      # gammes = [note[-1] for note in seq]
-      # print(gammes)
-      # print(len(seq), seq[:300])
   if __name__ == '__main__':
       main()
 #+end_src
